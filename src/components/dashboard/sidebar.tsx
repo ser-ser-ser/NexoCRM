@@ -24,8 +24,8 @@ const sidebarItems = [
         icon: LayoutDashboard,
     },
     {
-        title: "Propiedades",
-        href: "/dashboard/properties",
+        title: "Inventario",
+        href: "/dashboard/inventario",
         icon: Building2,
     },
     {
