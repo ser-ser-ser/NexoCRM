@@ -6,6 +6,27 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+export interface IndustrialCharacteristics {
+  tipo_nave?: string | null
+  altura_libre?: number | null
+  kv_as?: number | null
+  ano_construccion?: number | null
+  andenes?: {
+    con_rampa?: number | null
+    secos?: number | null
+  } | null
+  piso?: {
+    resistencia_ton_m2?: number | null
+    espesor_cm?: number | null
+  } | null
+  sistema_contra_incendio?: string | null
+  espuela_ferrocarril?: boolean | null
+  infraestructura?: string[] | null
+  documentacion?: string | null
+  m2_oficinas?: number | null
+  numero_banos?: number | string | null
+}
+
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
@@ -68,6 +89,44 @@ export type Database = {
             referencedRelation: "perfiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      desarrollos: {
+        Row: {
+          id: string
+          creado_en: string
+          nombre: string
+          tipo: "industrial" | "residencial" | "mixto" | null
+          master_plan_url: string | null
+          amenidades: Json | null
+          id_agencia: string | null
+        }
+        Insert: {
+          id?: string
+          creado_en?: string
+          nombre: string
+          tipo?: "industrial" | "residencial" | "mixto" | null
+          master_plan_url?: string | null
+          amenidades?: Json | null
+          id_agencia?: string | null
+        }
+        Update: {
+          id?: string
+          creado_en?: string
+          nombre?: string
+          tipo?: "industrial" | "residencial" | "mixto" | null
+          master_plan_url?: string | null
+          amenidades?: Json | null
+          id_agencia?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "desarrollos_id_agencia_fkey"
+            columns: ["id_agencia"]
+            isOneToOne: false
+            referencedRelation: "agencias"
+            referencedColumns: ["id"]
+          }
         ]
       }
       eventos_calendario: {
@@ -422,6 +481,7 @@ export type Database = {
           operacion: Database["public"]["Enums"]["tipo_operacion"] | null
           precio: number | null
           propietario_id: string | null
+          desarrollo_id: string | null
           tipo: Database["public"]["Enums"]["tipo_propiedad"] | null
           titulo: string | null
           ubicacion: unknown | null
@@ -439,6 +499,7 @@ export type Database = {
           operacion?: Database["public"]["Enums"]["tipo_operacion"] | null
           precio?: number | null
           propietario_id?: string | null
+          desarrollo_id?: string | null
           tipo?: Database["public"]["Enums"]["tipo_propiedad"] | null
           titulo?: string | null
           ubicacion?: unknown | null
@@ -456,6 +517,7 @@ export type Database = {
           operacion?: Database["public"]["Enums"]["tipo_operacion"] | null
           precio?: number | null
           propietario_id?: string | null
+          desarrollo_id?: string | null
           tipo?: Database["public"]["Enums"]["tipo_propiedad"] | null
           titulo?: string | null
           ubicacion?: unknown | null
@@ -466,6 +528,13 @@ export type Database = {
             columns: ["propietario_id"]
             isOneToOne: false
             referencedRelation: "perfiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "propiedades_desarrollo_id_fkey"
+            columns: ["desarrollo_id"]
+            isOneToOne: false
+            referencedRelation: "desarrollos"
             referencedColumns: ["id"]
           },
         ]

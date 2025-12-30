@@ -8,7 +8,12 @@ import {
     PlusCircle,
     Users,
     LogOut,
-    Menu
+    Menu,
+    KanbanSquare,
+    Map,
+    Key,
+    Calendar,
+    Settings
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -17,27 +22,78 @@ import { createClient } from "@/utils/supabase/client"
 import { useState } from "react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-const sidebarItems = [
+// Grouped Sidebar Configuration
+const sidebarGroups = [
     {
-        title: "Tablero",
-        href: "/dashboard",
-        icon: LayoutDashboard,
+        name: "Principal",
+        items: [
+            {
+                title: "Tablero",
+                href: "/dashboard",
+                icon: LayoutDashboard,
+            },
+            {
+                title: "Pipeline CRM",
+                href: "/dashboard/crm",
+                icon: KanbanSquare,
+            },
+        ]
     },
     {
-        title: "Inventario",
-        href: "/dashboard/inventario",
-        icon: Building2,
+        name: "Propiedades",
+        items: [
+            {
+                title: "Inventario",
+                href: "/dashboard/inventario",
+                icon: Building2,
+            },
+            {
+                title: "Mapa (Beta)",
+                href: "/dashboard/map",
+                icon: Map,
+            },
+            {
+                title: "Desarrollos",
+                href: "/dashboard/desarrollos",
+                icon: Building2,
+            },
+            {
+                title: "Rentas",
+                href: "/dashboard/rentas",
+                icon: Key,
+            },
+        ]
     },
     {
-        title: "Nueva Propiedad",
-        href: "/dashboard/new",
-        icon: PlusCircle,
+        name: "Gestión",
+        items: [
+            {
+                title: "Calendario",
+                href: "/dashboard/calendar",
+                icon: Calendar,
+            },
+            {
+                title: "Clientes",
+                href: "/dashboard/clients",
+                icon: Users,
+            },
+        ]
     },
     {
-        title: "Clientes",
-        href: "/dashboard/clients",
-        icon: Users,
-    },
+        name: "Config",
+        items: [
+            {
+                title: "Nueva Propiedad",
+                href: "/dashboard/new",
+                icon: PlusCircle,
+            },
+            {
+                title: "Ajustes",
+                href: "/dashboard/settings",
+                icon: Settings,
+            },
+        ]
+    }
 ]
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -68,31 +124,41 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
     }
 
     return (
-        <div className={cn("pb-12 h-full clay-card m-4 flex flex-col", className)}>
+        <div className={cn("pb-12 h-full clay-card m-4 flex flex-col overflow-y-auto", className)}>
             <div className="space-y-4 py-4 flex-1">
                 <div className="px-3 py-2">
                     <h2 className="mb-6 px-4 text-xl font-bold tracking-tight text-primary flex items-center gap-2">
                         <Building2 className="h-6 w-6" />
                         NexoCRM
                     </h2>
-                    <div className="space-y-1">
-                        {sidebarItems.map((item) => (
-                            <Button
-                                key={item.href}
-                                variant={pathname === item.href ? "secondary" : "ghost"}
-                                className={cn(
-                                    "w-full justify-start mb-1 font-medium",
-                                    pathname === item.href
-                                        ? "bg-secondary text-white hover:bg-secondary/80 shadow-md"
-                                        : "text-text-main hover:text-primary hover:bg-primary/10"
-                                )}
-                                asChild
-                            >
-                                <Link href={item.href}>
-                                    <item.icon className="mr-3 h-5 w-5" strokeWidth={1.5} />
-                                    {item.title}
-                                </Link>
-                            </Button>
+
+                    <div className="space-y-6">
+                        {sidebarGroups.map((group) => (
+                            <div key={group.name} className="px-3 pb-2">
+                                <h3 className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                                    {group.name}
+                                </h3>
+                                <div className="space-y-1">
+                                    {group.items.map((item) => (
+                                        <Button
+                                            key={item.href}
+                                            variant={pathname === item.href ? "secondary" : "ghost"}
+                                            className={cn(
+                                                "w-full justify-start mb-1 font-medium h-9",
+                                                pathname === item.href
+                                                    ? "bg-secondary text-white hover:bg-secondary/80 shadow-md"
+                                                    : "text-slate-600 hover:text-primary hover:bg-primary/10"
+                                            )}
+                                            asChild
+                                        >
+                                            <Link href={item.href}>
+                                                <item.icon className="mr-3 h-4 w-4" strokeWidth={userProfile ? 1.5 : 2} />
+                                                {item.title}
+                                            </Link>
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -102,7 +168,7 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
             <div className="mt-auto px-4 pb-4">
                 <div className="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100 dark:bg-slate-900/50 dark:border-slate-800">
                     <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                        <div className="h-10 w-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                             {userProfile?.full_name?.[0]?.toUpperCase() || "U"}
                         </div>
                         <div className="overflow-hidden">
@@ -122,7 +188,7 @@ export function Sidebar({ className, userProfile }: SidebarProps) {
                     onClick={handleLogout}
                     disabled={isLoading}
                 >
-                    <LogOut className="mr-3 h-5 w-5" strokeWidth={1.5} />
+                    <LogOut className="mr-3 h-4 w-4" strokeWidth={1.5} />
                     {isLoading ? "Cerrando..." : "Cerrar Sesión"}
                 </Button>
             </div>

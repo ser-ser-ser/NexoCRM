@@ -20,6 +20,7 @@ import {
 
 type Propiedad = Database["public"]["Tables"]["propiedades"]["Row"] & {
     perfiles: { nombre_completo: string | null } | null
+    desarrollos: { nombre: string | null } | null
 }
 
 interface TablaInventarioProps {
@@ -160,7 +161,7 @@ export function TablaInventario({ data }: TablaInventarioProps) {
                                             {propiedad.tipo === "industrial" && <Factory className="w-5 h-5" strokeWidth={1.5} />}
                                             {propiedad.tipo === "comercial" && <Store className="w-5 h-5" strokeWidth={1.5} />}
                                             {propiedad.tipo === "residencial" && <Home className="w-5 h-5" strokeWidth={1.5} />}
-                                            {!["industrial", "comercial", "residencial"].includes(propiedad.tipo) && <Building2 className="w-5 h-5" strokeWidth={1.5} />}
+                                            {!["industrial", "comercial", "residencial"].includes(propiedad.tipo || "") && <Building2 className="w-5 h-5" strokeWidth={1.5} />}
                                         </div>
 
                                         <div className="flex flex-col gap-0.5">
@@ -180,6 +181,11 @@ export function TablaInventario({ data }: TablaInventarioProps) {
                                                 <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 bg-slate-100 text-slate-600 border-0 font-medium capitalize">
                                                     {propiedad.operacion}
                                                 </Badge>
+                                                {propiedad.desarrollos?.nombre && (
+                                                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5 bg-purple-50 text-purple-700 border-0 font-medium max-w-[120px] truncate">
+                                                        {propiedad.desarrollos.nombre}
+                                                    </Badge>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

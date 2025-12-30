@@ -6,7 +6,7 @@ export default async function InventoryPage() {
 
     const { data: propiedades, error } = await supabase
         .from("propiedades")
-        .select("*, perfiles(nombre_completo)")
+        .select("*, perfiles:perfiles!fk_propiedad_propietario(nombre_completo), desarrollos(nombre)")
         .order("creado_en", { ascending: false })
 
     if (error) {

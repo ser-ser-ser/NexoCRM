@@ -5,7 +5,10 @@ import { FiltrosInventario } from "./filtros-inventario"
 import { TablaInventario } from "./tabla-inventario"
 import { Database } from "@/types/database.types"
 
-type Propiedad = Database["public"]["Tables"]["propiedades"]["Row"]
+type Propiedad = Database["public"]["Tables"]["propiedades"]["Row"] & {
+    perfiles: { nombre_completo: string | null } | null
+    desarrollos: { nombre: string | null } | null
+}
 
 interface ClienteInventarioProps {
     initialData: Propiedad[]
