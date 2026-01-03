@@ -21,6 +21,7 @@ import { MapPin, ImagePlus, DollarSign, Building2, Video, Car, Network, Briefcas
 import { IndustrialFields } from "./fields/industrial-fields"
 import { CommercialFields } from "./fields/commercial-fields"
 import { ResidentialFields } from "./fields/residential-fields"
+import { LandFields } from "./fields/land-fields"
 
 const MapPicker = dynamic(() => import("@/components/ui/map-picker"), {
     ssr: false,
@@ -198,6 +199,15 @@ export default function FormularioPropiedad() {
 
             const rawPrice = data.price ? Number(String(data.price).replace(/[^0-9.]/g, '')) : 0
 
+            // General Columns Logic (Offices, Baths, Parking)
+            const oficinasM2 = num(data.oficinas_m2)
+            const banosCount = num(data.banos_cantidad)
+            const estacionamientoCount = num(data.estacionamiento_cantidad)
+
+            // Land Logic
+            const enParqueIndustrial = bool(data.en_parque_industrial)
+            const enFraccionamiento = bool(data.en_fraccionamiento)
+
             // Superficies (Real Columns now)
             // If sub-units exist and main is zero, sum them up
             let supTotal = num(data.superficie_total)
@@ -241,6 +251,11 @@ export default function FormularioPropiedad() {
                 // Root Columns per Strict Schema
                 altura: num(data.altura),
                 subtipo: str(data.subtipo),
+                oficinas: oficinasM2,
+                banos: banosCount,
+                cajones_estacionamiento: estacionamientoCount,
+                en_parque_industrial: enParqueIndustrial,
+                en_fraccionamiento: enFraccionamiento,
 
                 // Commissions (Private)
                 comision_esquema: `Total: ${comisionTotal}% | Comparte: ${porcentajeCompartir}%`,
@@ -318,8 +333,11 @@ export default function FormularioPropiedad() {
                     reglas: {
                         mascotas_permitidas: bool(data.mascotas_permitidas)
                     },
+                    antiguedad: num(data.antiguedad),
+                    estado_conservacion: str(data.estado_conservacion) as any,
                     exterior: {
                         jardin_privado: bool(data.jardin_privado),
+                        jardin_m2: num(data.jardin_m2),
                         vigilancia_24_7: bool(data.vigilancia_24_7)
                     },
                     // Compatibility root fields
@@ -358,6 +376,17 @@ export default function FormularioPropiedad() {
 
                     // Legacy/Root compatibility (Prefer global input if set)
                     mantenimiento_mensual: num(data.mantenimiento) || num(data.mantenimiento_mensual_comercial),
+                }
+            } else if (categoria === 'terreno') {
+                caracteristicas = {
+                    ...caracteristicas,
+                    uso_suelo: str(data.uso_suelo),
+                    cuota_mantenimiento_parque: num(data.cuota_mantenimiento_parque),
+                    tiene_reglamento: bool(data.tiene_reglamento),
+                    reglamento_constructivo: str(data.reglamento_constructivo),
+                    amenidades_fraccionamiento: Object.keys(data)
+                        .filter(key => key.startsWith('amenidad_fracc_') && data[key] === 'on')
+                        .map(key => key.replace('amenidad_fracc_', ''))
                 }
             }
 
@@ -530,6 +559,24 @@ export default function FormularioPropiedad() {
                         />
                     </div>
 
+                    {/* GENERAL FIELDS (Offices, Baths, Parking) - Visible for relevant categories */}
+                    {(categoria === 'industrial' || categoria === 'comercial' || categoria === 'oficina') && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 mb-4">
+                            <div className="space-y-2">
+                                <Label>Oficinas (m²)</Label>
+                                <NumericFormat name="oficinas_m2" className="flex h-10 w-full rounded-md border border-input px-3 py-2" placeholder="Ej. 150" thousandSeparator={true} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Baños</Label>
+                                <Input name="banos_cantidad" type="number" placeholder="Ej. 2" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Cajones Estacionamiento</Label>
+                                <Input name="estacionamiento_cantidad" type="number" placeholder="Ej. 10" />
+                            </div>
+                        </div>
+                    )}
+
                     {/* SUPERFICIES (New Core Columns) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
@@ -575,6 +622,7 @@ export default function FormularioPropiedad() {
                         {categoria === 'comercial' && <CommercialFields subtipo={subtipo} />}
                         {categoria === 'oficina' && <CommercialFields subtipo="oficina" />}
                         {categoria === 'residencial' && <ResidentialFields />}
+                        {categoria === 'terreno' && <LandFields />}
                     </div>
 
                     {/* SUB-UNIDADES (Industrial OR Commercial Plaza/Edificio) */}

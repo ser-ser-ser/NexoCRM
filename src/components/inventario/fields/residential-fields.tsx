@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Home, Bath, Car, Layers, Zap, Shield, TreeDeciduous, Wind } from "lucide-react"
 
 const AMENIDADES_LIST = [
@@ -58,6 +59,24 @@ export function ResidentialFields() {
                     <Label htmlFor="niveles_plantas">Niveles / Plantas</Label>
                     <Input id="niveles_plantas" name="niveles_plantas" type="number" placeholder="Ej. 2" min="1" />
                 </div>
+                <div className="space-y-2">
+                    <Label htmlFor="antiguedad">Antigüedad (Años)</Label>
+                    <Input id="antiguedad" name="antiguedad" type="number" placeholder="Ej. 5" min="0" />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="estado_conservacion">Estado de Conservación</Label>
+                    <Select name="estado_conservacion">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="excelente">Excelente / Nuevo</SelectItem>
+                            <SelectItem value="bueno">Bueno</SelectItem>
+                            <SelectItem value="regular">Regular</SelectItem>
+                            <SelectItem value="remodelar">Para Remodelar</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
 
             <div className="h-px bg-slate-100 dark:bg-slate-700 my-4" />
@@ -111,6 +130,8 @@ export function ResidentialFields() {
                             <TreeDeciduous className="h-4 w-4 text-green-600" />
                             <Label htmlFor="jardin_privado" className="cursor-pointer text-sm font-medium">Jardín Privado</Label>
                         </div>
+                        {/* We use CSS has selector or similar, but since we are refactoring, let's just put the input here always visible if checked logic or just always visible for simplicity as requested 'Jardín/Patio: (Sí/No y M² aproximados)' */}
+                        <Input name="jardin_m2" placeholder="M² Aprox" className="h-8 w-24 text-xs" />
                     </div>
                     <div className="flex items-center space-x-3 p-2">
                         <Checkbox id="vigilancia_24_7" name="vigilancia_24_7" className="h-5 w-5" />

@@ -44,8 +44,11 @@ export interface DetallesResidenciales {
   reglas?: {
     mascotas_permitidas?: boolean;
   };
+  antiguedad?: number; // Años
+  estado_conservacion?: 'excelente' | 'bueno' | 'regular' | 'remodelar';
   exterior?: {
     jardin_privado?: boolean;
+    jardin_m2?: number; // Needed if Jardin is true
     vigilancia_24_7?: boolean;
   };
 }
